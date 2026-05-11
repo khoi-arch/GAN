@@ -74,7 +74,9 @@ def train_single_experiment(exp_dir, epochs=200, batch_size=128):
     print("      [3/4] Khởi tạo toàn bộ Hệ thống Loss...")
     wgan_loss = WGANLoss()
     loss_cov = CovarianceMatchingLoss().to(device)
-    loss_semantic = SemanticRegularizationLoss(policy_path, device=device)
+    
+    # [ĐÃ FIX Ở ĐÂY]: Xóa bỏ device=device trong __init__, chỉ dùng .to(device)
+    loss_semantic = SemanticRegularizationLoss(policy_path).to(device)
     
     # Trọng số của các hàm Loss (Hyperparameters cực kỳ quan trọng)
     lambda_gp = 10.0      # Gradient Penalty (Cố định của WGAN-GP)
@@ -198,7 +200,9 @@ def run_all_experiments():
         try:
             train_single_experiment(str(folder), epochs=200, batch_size=128)
         except Exception as e:
+            import traceback
             print(f"      [!] LỖI khi train {folder.name}: {e}")
+            traceback.print_exc()
 
 if __name__ == "__main__":
     run_all_experiments()
