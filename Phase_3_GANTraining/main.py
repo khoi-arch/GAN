@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import warnings
 import numpy as np
 import random
+from pathlib import Path
 
 # Import kiến trúc và Loss từ các file cùng thư mục
 from model import IDSGenerator, Discriminator
@@ -24,19 +25,25 @@ def set_global_seed(seed=42):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
-def load_data(data_dir):
-    print("[1/4] Đang nạp Tensors...")
-    malware_tensor = torch.load(os.path.join(data_dir, "tensor_malware.pt"))
-    benign_tensor = torch.load(os.path.join(data_dir, "tensor_benign.pt"))
+def load_data(exp_dir):
+    print(f"      [1/4] Đang nạp Tensors từ {os.path.basename(exp_dir)}...")
+    malware_tensor = torch.load(os.path.join(exp_dir, "tensor_malware.pt"))
+    benign_tensor = torch.load(os.path.join(exp_dir, "tensor_benign.pt"))
     return malware_tensor, benign_tensor
 
-def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=128):
+def train_single_experiment(exp_dir, epochs=200, batch_size=128):
+    """Hàm huấn luyện cho 1 folder cụ thể"""
+    exp_name = os.path.basename(exp_dir)
+    print(f"\n{'='*60}")
+    print(f"🚀 BẮT ĐẦU HUẤN LUYỆN GAN CHO: {exp_name}")
+    print(f"{'='*60}")
+
     set_global_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"-> Đang chạy trên thiết bị: {device}")
     
     # 1. Load Data
-    X_malware, X_benign = load_data(data_dir)
+    X_malware, X_benign = load_data(exp_dir)
     input_dim = X_malware.shape[1]
     noise_dim = 32
     
@@ -48,9 +55,14 @@ def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=12
     benign_loader = DataLoader(benign_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     # 2. Khởi tạo Models
-    print("[2/4] Khởi tạo Generator (Masked) & Discriminator (WGAN Critic)...")
-    policy_path = os.path.join(data_dir, "adversarial_policy_3.json")
+    print("      [2/4] Khởi tạo Generator (Masked) & Discriminator (WGAN Critic)...")
+    # Sửa đúng tên file theo Tree của ní
+    policy_path = os.path.join(exp_dir, "adversarial_policy_S3.json")
     
+    if not os.path.exists(policy_path):
+        print(f"      [!] BỎ QUA {exp_name}: Không tìm thấy file {policy_path}")
+        return
+
     generator = IDSGenerator(input_dim=input_dim, noise_dim=noise_dim, policy_path=policy_path).to(device)
     discriminator = Discriminator(input_dim=input_dim).to(device)
     
@@ -59,7 +71,7 @@ def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=12
     opt_D = optim.Adam(discriminator.parameters(), lr=1e-4, betas=(0.0, 0.9))
     
     # 3. Khởi tạo Losses
-    print("[3/4] Khởi tạo toàn bộ Hệ thống Loss...")
+    print("      [3/4] Khởi tạo toàn bộ Hệ thống Loss...")
     wgan_loss = WGANLoss()
     loss_cov = CovarianceMatchingLoss().to(device)
     loss_semantic = SemanticRegularizationLoss(policy_path, device=device)
@@ -71,7 +83,7 @@ def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=12
     lambda_sat = 10.0     # Phạt nặng Tanh Saturation
     n_critic = 5          # Train Critic 5 lần / Generator 1 lần
 
-    print("[4/4] Bắt đầu quá trình Huấn luyện Cường độ cao...")
+    print("      [4/4] Bắt đầu quá trình Huấn luyện Cường độ cao...")
     
     generator.train()
     discriminator.train()
@@ -145,25 +157,48 @@ def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=12
             
         # In log tiến độ mỗi 10 epoch
         if (epoch + 1) % 10 == 0 or epoch == 0:
-            print(f"Epoch [{epoch+1:03d}/{epochs}] | "
+            print(f"      Epoch [{epoch+1:03d}/{epochs}] | "
                   f"D_Loss: {d_loss.item():.4f} | "
                   f"G_Adv: {g_adv_loss.item():.4f} | "
                   f"Cov: {g_cov_loss.item():.4f} | "
                   f"L1: {l1_loss.item():.4f} | "
                   f"Sat: {sat_loss.item():.4f}")
 
-    print("✅ Hoàn tất huấn luyện. Generator đã nắm vững Bản đồ Tác chiến!")
+    print(f"✅ Hoàn tất huấn luyện cho {exp_name}.")
     
-    # Save Model Weights
-    torch.save(generator.state_dict(), os.path.join(data_dir, "generator_weights.pth"))
+    # Save Model Weights vào đúng thư mục Experiment
+    torch.save(generator.state_dict(), os.path.join(exp_dir, "generator_weights.pth"))
     
     # Sinh ra một mẻ Fake Malware cuối cùng để lưu lại
     generator.eval()
     with torch.no_grad():
         z_final = torch.randn(X_malware.shape[0], noise_dim).to(device)
         final_fake_malware, _ = generator(torch.FloatTensor(X_malware).to(device), z_final)
-        torch.save(final_fake_malware.cpu(), os.path.join(data_dir, "tensor_fake_malware.pt"))
-    print(f"   -> Đã lưu Fake Malware Tensor tại: {os.path.join(data_dir, 'tensor_fake_malware.pt')}")
+        torch.save(final_fake_malware.cpu(), os.path.join(exp_dir, "tensor_fake_malware.pt"))
+    print(f"   -> Đã lưu File tại: {exp_dir}")
+    
+    # Dọn dẹp VRAM để tránh Out of Memory khi qua folder tiếp theo
+    del generator, discriminator, X_malware, X_benign
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+def run_all_experiments():
+    """Hàm tự động quét qua 7 folder A->G và train liên tục"""
+    script_dir = Path(__file__).resolve().parent
+    tensors_root = script_dir.parent / "data_artifacts" / "gan_tensors"
+    
+    if not tensors_root.exists():
+        print(f"❌ LỖI: Không tìm thấy thư mục {tensors_root}")
+        return
+
+    exp_folders = sorted([f for f in tensors_root.iterdir() if f.is_dir()])
+    print(f"[*] Tìm thấy {len(exp_folders)} Experiments. Chuẩn bị vắt kiệt GPU...")
+
+    for folder in exp_folders:
+        try:
+            train_single_experiment(str(folder), epochs=200, batch_size=128)
+        except Exception as e:
+            print(f"      [!] LỖI khi train {folder.name}: {e}")
 
 if __name__ == "__main__":
-    train_gan_experiment()
+    run_all_experiments()
