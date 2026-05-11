@@ -49,7 +49,7 @@ def train_gan_experiment(data_dir="../data_artifacts", epochs=200, batch_size=12
 
     # 2. Khởi tạo Models
     print("[2/4] Khởi tạo Generator (Masked) & Discriminator (WGAN Critic)...")
-    policy_path = os.path.join(data_dir, "adversarial_policy.json")
+    policy_path = os.path.join(data_dir, "adversarial_policy_3.json")
     
     generator = IDSGenerator(input_dim=input_dim, noise_dim=noise_dim, policy_path=policy_path).to(device)
     discriminator = Discriminator(input_dim=input_dim).to(device)

@@ -6,6 +6,7 @@ import xgboost as xgb
 import shap
 import warnings
 import random
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.cluster import KMeans
@@ -76,13 +77,13 @@ def calculate_sensitivity(clf, X, eps_ratio=0.05, k_trials=5):
         
     return accumulated_sensitivities / k_trials
 
-def run_space_mapper(data_dir="../data_artifacts"):
-    # Kích hoạt tính nhất quán toàn cục
-    set_global_seed(42)
-    
-    print("[1/5] Đang load Tensors và chuẩn bị dữ liệu Surrogate...")
-    
-    # Load Tensors
+def process_logic_original(data_dir, groups_path, s_name, s_size):
+    """
+    HÀM BÊ NGUYÊN 100% LOGIC CŨ CỦA NÍ VÀO ĐÂY ĐỂ CHẠY THEO SETTING S1-S5
+    """
+    print(f"\n[RUN] Experiment: {os.path.basename(data_dir)} | Setting: {s_name} (Size: {s_size if s_size else 'FULL'})")
+
+    # [1/5] Đang load Tensors và chuẩn bị dữ liệu Surrogate...
     malware_tensor = torch.load(os.path.join(data_dir, "tensor_malware.pt"))
     benign_tensor = torch.load(os.path.join(data_dir, "tensor_benign.pt"))
     
@@ -97,7 +98,7 @@ def run_space_mapper(data_dir="../data_artifacts"):
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
-    print("[2/5] Đang train Surrogate IDS (XGBoost)...")
+    # [2/5] Đang train Surrogate IDS (XGBoost)...
     clf = xgb.XGBClassifier(
         n_estimators=150, max_depth=6, learning_rate=0.1,
         use_label_encoder=False, eval_metric='logloss', n_jobs=-1,
@@ -109,34 +110,28 @@ def run_space_mapper(data_dir="../data_artifacts"):
     acc = accuracy_score(y_test, y_pred)
     print(f"✅ Độ chính xác Surrogate: {acc*100:.2f}%")
 
-    print("[3/5] Đang phân tích SHAP và Sensitivity...")
-    
-    # Latent Stratified Sampling
-    print("      -> Gom cụm Latent Families để chống bias khi lấy mẫu...")
-    
-    # [NÂNG CẤP 2] Sửa logic số cụm để tránh KMeans sập khi dataset nhỏ
+    # [3/5] Đang phân tích SHAP và Sensitivity...
+    # Latent Stratified Sampling logic [NÂNG CẤP 2]
     n_latent_families = max(2, min(10, len(X_malware) // 50))
     kmeans_latent = KMeans(n_clusters=n_latent_families, random_state=42, n_init=10).fit(X_malware)
     latent_labels = kmeans_latent.labels_
     
-    sample_size = min(2000, len(X_malware))
-    
-    if len(X_malware) > sample_size:
+    # ĐIỀU CHỈNH SIZE THEO THÍ NGHIỆM S1-S5 CỦA NÍ
+    if s_size is None or s_size >= len(X_malware):
+        actual_size = len(X_malware)
+        X_sample = X_malware
+    else:
+        actual_size = s_size
         try:
-            # Cố gắng chia phân tầng (Stratified)
             X_sample, _, _, _ = train_test_split(
                 X_malware, latent_labels, 
-                train_size=sample_size, 
+                train_size=actual_size, 
                 stratify=latent_labels, 
                 random_state=42
             )
         except ValueError:
-            # Safeguard: Bắt lỗi Singleton Cluster -> Chuyển sang lấy mẫu ngẫu nhiên (Uniform Random)
-            print("      [!] Cảnh báo: Stratified split thất bại. Chuyển sang lấy mẫu ngẫu nhiên (Uniform Sampling)...")
-            sample_idx = np.random.choice(len(X_malware), sample_size, replace=False)
+            sample_idx = np.random.choice(len(X_malware), actual_size, replace=False)
             X_sample = X_malware[sample_idx]
-    else:
-        X_sample = X_malware
     
     # Tính SHAP
     explainer = shap.TreeExplainer(clf)
@@ -154,17 +149,12 @@ def run_space_mapper(data_dir="../data_artifacts"):
     p95_sens = np.percentile(raw_sensitivities, 95) + 1e-9
     norm_sens = np.clip(raw_sensitivities / p95_sens, 0.0, 1.0)
     
-    print("[4/5] Đang tính toán Risk Score và phân vùng Natural Breaks (1D K-Means)...")
-    
+    # [4/5] Đang tính toán Risk Score và phân vùng Natural Breaks (1D K-Means)...
     # Dùng Geometric Mean (Căn bậc 2 của tích) thay vì nhân trực tiếp
     risk_scores = np.sqrt(norm_shap * norm_sens)
     
     try:
-        feature_names = get_feature_names(os.path.join(data_dir, "feature_groups.json"))
-        # Sanity Check
-        if len(feature_names) != X_malware.shape[1]:
-            print(f"      [!] LỖI NGHIÊM TRỌNG: Số lượng feature name ({len(feature_names)}) không khớp với số cột Tensor ({X_malware.shape[1]})!")
-            feature_names = [f"F_{i}" for i in range(X_malware.shape[1])]
+        feature_names = get_feature_names(groups_path)
     except Exception:
         feature_names = [f"F_{i}" for i in range(X_malware.shape[1])]
 
@@ -203,50 +193,63 @@ def run_space_mapper(data_dir="../data_artifacts"):
         feature_metrics.append(metric)
         zones_temp[zone_name].append(metric)
         
-    # Sort Metrics tổng từ Risk cao xuống thấp để view dễ nhìn
+    # Sort Metrics
     feature_metrics.sort(key=lambda x: x["risk_score"], reverse=True)
-    for z in zones_temp:
-        zones_temp[z].sort(key=lambda x: x["risk_score"], reverse=True)
     
-    print("[5/5] Đang xuất Adversarial Policy...")
-    
+    # [5/5] Đang xuất Adversarial Policy...
     policy = {
         "metadata": {
+            "experiment": os.path.basename(data_dir),
+            "setting": s_name,
+            "samples_used": actual_size,
             "surrogate_accuracy": float(acc),
             "total_features": len(feature_names),
-            "sampling_size": sample_size,
             "clustering_method": "1D K-Means (n_init=50, Natural Breaks)",
             "risk_fusion_method": "Geometric Mean",
             "normalization": "Robust Scaling (P95 Clip)"
         },
         "zones": {
-            "CRITICAL": {
-                "description": "High Risk (Semantic Identity). Allowed variance: 2%",
-                "allowed_variance": 0.02,
-                "features": [f["index"] for f in zones_temp["CRITICAL"]]
-            },
-            "MEDIUM": {
-                "description": "Moderate Risk. Allowed variance: 10%",
-                "allowed_variance": 0.10,
-                "features": [f["index"] for f in zones_temp["MEDIUM"]]
-            },
-            "FREE": {
-                "description": "Low Risk (Blind spots). Allowed variance: 20%",
-                "allowed_variance": 0.20,
-                "features": [f["index"] for f in zones_temp["FREE"]]
-            }
+            "CRITICAL": {"allowed_variance": 0.02, "features": [f["index"] for f in zones_temp["CRITICAL"]]},
+            "MEDIUM": {"allowed_variance": 0.10, "features": [f["index"] for f in zones_temp["MEDIUM"]]},
+            "FREE": {"allowed_variance": 0.20, "features": [f["index"] for f in zones_temp["FREE"]]}
         },
         "detailed_metrics": feature_metrics
     }
 
-    out_path = os.path.join(data_dir, "adversarial_policy.json")
+    # Lưu file riêng biệt để ní dễ so sánh
+    out_path = os.path.join(data_dir, f"adversarial_policy_{s_name}.json")
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(policy, f, indent=4)
-        
-    print(f"✅ Xong! Policy đã sẵn sàng tại: {out_path}")
-    print(f"   -> Đã tự động chốt {len(zones_temp['CRITICAL'])} cột vào vùng CRITICAL.")
-    print(f"   -> Đã tự động chốt {len(zones_temp['MEDIUM'])} cột vào vùng MEDIUM.")
-    print(f"   -> Đã tự động chốt {len(zones_temp['FREE'])} cột vào vùng FREE.")
+    print(f"      ✅ Đã lưu Policy tại: {out_path}")
+
+def run_auto_experiment():
+    set_global_seed(42)
+    
+    # Map đường dẫn Tree
+    script_dir = Path(__file__).resolve().parent
+    artifacts_dir = script_dir.parent / "data_artifacts"
+    tensors_root = artifacts_dir / "gan_tensors"
+    groups_path = artifacts_dir / "feature_groups.json"
+    
+    # 5 Setting của ní để CHỨNG MINH
+    settings = {
+        "S1": 500,
+        "S2": 1000,
+        "S3": 2000,
+        "S4": 5000,
+        "S5": None # FULL (~20k)
+    }
+
+    exp_folders = sorted([f for f in tensors_root.iterdir() if f.is_dir()])
+    
+    print(f"[*] KHỞI ĐỘNG CHẾ ĐỘ AUTO-ABLATION (7 FOLDERS X 5 SETTINGS)")
+
+    for folder in exp_folders:
+        for s_name, s_size in settings.items():
+            try:
+                process_logic_original(str(folder), str(groups_path), s_name, s_size)
+            except Exception as e:
+                print(f"      [!] Lỗi tại {folder.name} ({s_name}): {e}")
 
 if __name__ == "__main__":
-    run_space_mapper()
+    run_auto_experiment()
