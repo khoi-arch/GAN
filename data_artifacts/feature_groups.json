@@ -1,0 +1,70 @@
+{
+    "BINARY": [
+        "psxview.not_in_eprocess_pool"
+    ],
+    "RARE_HIGH": [
+        "psxview.not_in_eprocess_pool_false_avg",
+        "callbacks.nanonymous"
+    ],
+    "RARE_MID": [],
+    "OUTLIER": [
+        "pslist.avg_handlers",
+        "handles.nhandles",
+        "handles.avg_handles_per_proc",
+        "handles.nfile",
+        "ldrmodules.not_in_load_avg",
+        "ldrmodules.not_in_mem_avg",
+        "malfind.ninjections",
+        "malfind.commitCharge",
+        "malfind.protection",
+        "malfind.uniqueInjections",
+        "psxview.not_in_pslist",
+        "psxview.not_in_ethread_pool",
+        "psxview.not_in_pspcid_list",
+        "psxview.not_in_csrss_handles",
+        "psxview.not_in_deskthrd",
+        "psxview.not_in_pslist_false_avg",
+        "psxview.not_in_ethread_pool_false_avg",
+        "psxview.not_in_pspcid_list_false_avg"
+    ],
+    "HEAVY_TAIL": [
+        "pslist.nproc",
+        "pslist.nppid",
+        "handles.ndesktop",
+        "handles.nkey",
+        "handles.ndirectory",
+        "handles.nsemaphore",
+        "ldrmodules.not_in_init_avg",
+        "psxview.not_in_session",
+        "psxview.not_in_csrss_handles_false_avg",
+        "psxview.not_in_session_false_avg",
+        "psxview.not_in_deskthrd_false_avg",
+        "modules.nmodules",
+        "svcscan.nservices",
+        "svcscan.kernel_drivers",
+        "svcscan.fs_drivers",
+        "svcscan.shared_process_services",
+        "svcscan.nactive",
+        "callbacks.ncallbacks",
+        "callbacks.ngeneric"
+    ],
+    "NORMAL": [
+        "pslist.avg_threads",
+        "dlllist.ndlls",
+        "dlllist.avg_dlls_per_proc",
+        "handles.nevent",
+        "handles.nthread",
+        "handles.ntimer",
+        "handles.nsection",
+        "handles.nmutant",
+        "ldrmodules.not_in_load",
+        "ldrmodules.not_in_init",
+        "ldrmodules.not_in_mem",
+        "svcscan.process_services"
+    ],
+    "DROP": [
+        "pslist.nprocs64bit",
+        "handles.nport",
+        "svcscan.interactive_process_services"
+    ]
+}

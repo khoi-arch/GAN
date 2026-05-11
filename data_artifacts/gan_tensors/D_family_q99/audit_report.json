@@ -1,0 +1,944 @@
+{
+    "strategy": "D_family_q99",
+    "features_audit": {
+        "psxview.not_in_eprocess_pool": {
+            "group": "BINARY",
+            "scaled": false,
+            "transform_applied": "Pass-through",
+            "Phase_1_RAW": {
+                "skewness": 16.9233,
+                "kurtosis": 284.4224
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 16.9233,
+                "kurtosis": 284.4224
+            },
+            "Phase_3_SCALED": {
+                "skewness": 16.9233,
+                "kurtosis": 284.4224
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "psxview.not_in_eprocess_pool_false_avg": {
+            "group": "RARE_HIGH",
+            "scaled": false,
+            "transform_applied": "Pass-through",
+            "Phase_1_RAW": {
+                "skewness": 17.9972,
+                "kurtosis": 341.1502
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 17.9972,
+                "kurtosis": 341.1502
+            },
+            "Phase_3_SCALED": {
+                "skewness": 17.9972,
+                "kurtosis": 341.1502
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "callbacks.nanonymous": {
+            "group": "RARE_HIGH",
+            "scaled": false,
+            "transform_applied": "Pass-through",
+            "Phase_1_RAW": {
+                "skewness": 25.4586,
+                "kurtosis": 646.1952
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 25.4586,
+                "kurtosis": 646.1952
+            },
+            "Phase_3_SCALED": {
+                "skewness": 25.4586,
+                "kurtosis": 646.1952
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "pslist.avg_handlers": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 143.5771,
+                "kurtosis": 21490.9655
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.9296,
+                "kurtosis": 6.6134
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.9296,
+                "kurtosis": 6.6134
+            },
+            "Shift_Raw_to_Transformed": 142.6476
+        },
+        "handles.nhandles": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 142.7261,
+                "kurtosis": 21322.797
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.1201,
+                "kurtosis": 3.2623
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.1201,
+                "kurtosis": 3.2623
+            },
+            "Shift_Raw_to_Transformed": 143.8462
+        },
+        "handles.avg_handles_per_proc": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 148.1526,
+                "kurtosis": 22424.3617
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.245,
+                "kurtosis": 6.9454
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.245,
+                "kurtosis": 6.9454
+            },
+            "Shift_Raw_to_Transformed": 146.9075
+        },
+        "handles.nfile": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 142.7034,
+                "kurtosis": 21297.0388
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 2.2829,
+                "kurtosis": 6.161
+            },
+            "Phase_3_SCALED": {
+                "skewness": 2.2829,
+                "kurtosis": 6.161
+            },
+            "Shift_Raw_to_Transformed": 140.4205
+        },
+        "ldrmodules.not_in_load_avg": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 22.0669,
+                "kurtosis": 605.3883
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.8706,
+                "kurtosis": 6.3214
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.8706,
+                "kurtosis": 6.3214
+            },
+            "Shift_Raw_to_Transformed": 20.1963
+        },
+        "ldrmodules.not_in_mem_avg": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 22.0557,
+                "kurtosis": 604.851
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.8723,
+                "kurtosis": 6.3312
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.8723,
+                "kurtosis": 6.3312
+            },
+            "Shift_Raw_to_Transformed": 20.1834
+        },
+        "malfind.ninjections": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 8.7494,
+                "kurtosis": 156.8193
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 2.9996,
+                "kurtosis": 7.3424
+            },
+            "Phase_3_SCALED": {
+                "skewness": 2.9996,
+                "kurtosis": 7.3424
+            },
+            "Shift_Raw_to_Transformed": 5.7498
+        },
+        "malfind.commitCharge": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 10.1266,
+                "kurtosis": 158.5095
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 3.1142,
+                "kurtosis": 7.8837
+            },
+            "Phase_3_SCALED": {
+                "skewness": 3.1142,
+                "kurtosis": 7.8837
+            },
+            "Shift_Raw_to_Transformed": 7.0125
+        },
+        "malfind.protection": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 8.7494,
+                "kurtosis": 156.8193
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 2.9996,
+                "kurtosis": 7.3424
+            },
+            "Phase_3_SCALED": {
+                "skewness": 2.9996,
+                "kurtosis": 7.3424
+            },
+            "Shift_Raw_to_Transformed": 5.7498
+        },
+        "malfind.uniqueInjections": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 6.7475,
+                "kurtosis": 85.3187
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 3.0503,
+                "kurtosis": 7.6545
+            },
+            "Phase_3_SCALED": {
+                "skewness": 3.0503,
+                "kurtosis": 7.6545
+            },
+            "Shift_Raw_to_Transformed": 3.6972
+        },
+        "psxview.not_in_pslist": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 3.9672,
+                "kurtosis": 30.4043
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.3632,
+                "kurtosis": 1.9286
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.3632,
+                "kurtosis": 1.9286
+            },
+            "Shift_Raw_to_Transformed": 2.604
+        },
+        "psxview.not_in_ethread_pool": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 13.496,
+                "kurtosis": 272.9054
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 3.0976,
+                "kurtosis": 14.3768
+            },
+            "Phase_3_SCALED": {
+                "skewness": 3.0976,
+                "kurtosis": 14.3768
+            },
+            "Shift_Raw_to_Transformed": 10.3984
+        },
+        "psxview.not_in_pspcid_list": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 4.2001,
+                "kurtosis": 33.5891
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.4451,
+                "kurtosis": 2.411
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.4451,
+                "kurtosis": 2.411
+            },
+            "Shift_Raw_to_Transformed": 2.7551
+        },
+        "psxview.not_in_csrss_handles": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 13.4897,
+                "kurtosis": 272.7226
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 3.0934,
+                "kurtosis": 14.3494
+            },
+            "Phase_3_SCALED": {
+                "skewness": 3.0934,
+                "kurtosis": 14.3494
+            },
+            "Shift_Raw_to_Transformed": 10.3963
+        },
+        "psxview.not_in_deskthrd": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 12.5988,
+                "kurtosis": 245.8191
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 3.104,
+                "kurtosis": 14.422
+            },
+            "Phase_3_SCALED": {
+                "skewness": 3.104,
+                "kurtosis": 14.422
+            },
+            "Shift_Raw_to_Transformed": 9.4949
+        },
+        "psxview.not_in_pslist_false_avg": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 1.9254,
+                "kurtosis": 7.1959
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.0768,
+                "kurtosis": 0.6396
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.0768,
+                "kurtosis": 0.6396
+            },
+            "Shift_Raw_to_Transformed": 0.8486
+        },
+        "psxview.not_in_ethread_pool_false_avg": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 3.4036,
+                "kurtosis": 22.7889
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.7301,
+                "kurtosis": 4.4604
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.7301,
+                "kurtosis": 4.4604
+            },
+            "Shift_Raw_to_Transformed": 1.6735
+        },
+        "psxview.not_in_pspcid_list_false_avg": {
+            "group": "OUTLIER",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Scaled (No SQRT)",
+            "Phase_1_RAW": {
+                "skewness": 2.6777,
+                "kurtosis": 20.492
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.0877,
+                "kurtosis": 0.6912
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.0877,
+                "kurtosis": 0.6912
+            },
+            "Shift_Raw_to_Transformed": 1.5901
+        },
+        "pslist.nproc": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 9.038,
+                "kurtosis": 160.6484
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -0.8306,
+                "kurtosis": 3.9283
+            },
+            "Phase_3_SCALED": {
+                "skewness": -0.8306,
+                "kurtosis": 3.9283
+            },
+            "Shift_Raw_to_Transformed": 9.8686
+        },
+        "pslist.nppid": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 6.8451,
+                "kurtosis": 121.1392
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.7897,
+                "kurtosis": 7.2425
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.7897,
+                "kurtosis": 7.2425
+            },
+            "Shift_Raw_to_Transformed": 8.6348
+        },
+        "handles.ndesktop": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 2.4233,
+                "kurtosis": 81.6002
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.8812,
+                "kurtosis": 5.6446
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.8812,
+                "kurtosis": 5.6446
+            },
+            "Shift_Raw_to_Transformed": 4.3045
+        },
+        "handles.nkey": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 5.455,
+                "kurtosis": 90.1141
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -0.9463,
+                "kurtosis": 1.5689
+            },
+            "Phase_3_SCALED": {
+                "skewness": -0.9463,
+                "kurtosis": 1.5689
+            },
+            "Shift_Raw_to_Transformed": 6.4013
+        },
+        "handles.ndirectory": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 3.9706,
+                "kurtosis": 150.3251
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.7834,
+                "kurtosis": 5.3055
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.7834,
+                "kurtosis": 5.3055
+            },
+            "Shift_Raw_to_Transformed": 5.754
+        },
+        "handles.nsemaphore": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 5.5523,
+                "kurtosis": 384.9056
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.7951,
+                "kurtosis": 3.4791
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.7951,
+                "kurtosis": 3.4791
+            },
+            "Shift_Raw_to_Transformed": 7.3474
+        },
+        "ldrmodules.not_in_init_avg": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 19.6288,
+                "kurtosis": 476.0108
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.9878,
+                "kurtosis": 4.3179
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.9878,
+                "kurtosis": 4.3179
+            },
+            "Shift_Raw_to_Transformed": 18.641
+        },
+        "psxview.not_in_session": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 3.9673,
+                "kurtosis": 30.4051
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.8367,
+                "kurtosis": -0.0471
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.8367,
+                "kurtosis": -0.0471
+            },
+            "Shift_Raw_to_Transformed": 3.1306
+        },
+        "psxview.not_in_csrss_handles_false_avg": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 3.2808,
+                "kurtosis": 21.8965
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.0485,
+                "kurtosis": 1.4383
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.0485,
+                "kurtosis": 1.4383
+            },
+            "Shift_Raw_to_Transformed": 2.2323
+        },
+        "psxview.not_in_session_false_avg": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 1.9021,
+                "kurtosis": 7.0648
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.6624,
+                "kurtosis": -0.4754
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.6624,
+                "kurtosis": -0.4754
+            },
+            "Shift_Raw_to_Transformed": 1.2397
+        },
+        "psxview.not_in_deskthrd_false_avg": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": 3.1555,
+                "kurtosis": 19.2574
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.2333,
+                "kurtosis": 2.5072
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.2333,
+                "kurtosis": 2.5072
+            },
+            "Shift_Raw_to_Transformed": 1.9222
+        },
+        "modules.nmodules": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -7.5436,
+                "kurtosis": 216.6503
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 7.5436
+        },
+        "svcscan.nservices": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -32.1139,
+                "kurtosis": 1554.2366
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 32.1139
+        },
+        "svcscan.kernel_drivers": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -35.4513,
+                "kurtosis": 1729.4007
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 35.4513
+        },
+        "svcscan.fs_drivers": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -60.7744,
+                "kurtosis": 4574.7366
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 60.7744
+        },
+        "svcscan.shared_process_services": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -25.1236,
+                "kurtosis": 1132.2246
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 25.1236
+        },
+        "svcscan.nactive": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -5.9186,
+                "kurtosis": 150.2718
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -1.256,
+                "kurtosis": 1.9179
+            },
+            "Phase_3_SCALED": {
+                "skewness": -1.256,
+                "kurtosis": 1.9179
+            },
+            "Shift_Raw_to_Transformed": 4.6626
+        },
+        "callbacks.ncallbacks": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -6.9821,
+                "kurtosis": 48.248
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -0.9639,
+                "kurtosis": 4.3381
+            },
+            "Phase_3_SCALED": {
+                "skewness": -0.9639,
+                "kurtosis": 4.3381
+            },
+            "Shift_Raw_to_Transformed": 6.0182
+        },
+        "callbacks.ngeneric": {
+            "group": "HEAVY_TAIL",
+            "scaled": true,
+            "transform_applied": "Clipped (Dynamic) + Signed SQRT + Scaled",
+            "Phase_1_RAW": {
+                "skewness": -62.4807,
+                "kurtosis": 3902.1662
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.0,
+                "kurtosis": 0.0
+            },
+            "Shift_Raw_to_Transformed": 62.4807
+        },
+        "pslist.avg_threads": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 1.5712,
+                "kurtosis": 18.3033
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.5712,
+                "kurtosis": 18.3033
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.5712,
+                "kurtosis": 18.3033
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "dlllist.ndlls": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 0.6505,
+                "kurtosis": 17.7862
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 0.6505,
+                "kurtosis": 17.7862
+            },
+            "Phase_3_SCALED": {
+                "skewness": 0.6505,
+                "kurtosis": 17.7862
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "dlllist.avg_dlls_per_proc": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": -4.8813,
+                "kurtosis": 58.3005
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -4.8813,
+                "kurtosis": 58.3005
+            },
+            "Phase_3_SCALED": {
+                "skewness": -4.8813,
+                "kurtosis": 58.3005
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "handles.nevent": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": -2.3868,
+                "kurtosis": 6.4758
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -2.3868,
+                "kurtosis": 6.4758
+            },
+            "Phase_3_SCALED": {
+                "skewness": -2.3868,
+                "kurtosis": 6.4758
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "handles.nthread": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 9.2692,
+                "kurtosis": 511.5473
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 9.2692,
+                "kurtosis": 511.5473
+            },
+            "Phase_3_SCALED": {
+                "skewness": 9.2692,
+                "kurtosis": 511.5473
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "handles.ntimer": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 1.1057,
+                "kurtosis": 28.835
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.1057,
+                "kurtosis": 28.835
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.1057,
+                "kurtosis": 28.835
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "handles.nsection": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 7.1266,
+                "kurtosis": 132.6484
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 7.1266,
+                "kurtosis": 132.6484
+            },
+            "Phase_3_SCALED": {
+                "skewness": 7.1266,
+                "kurtosis": 132.6484
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "handles.nmutant": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": -0.3979,
+                "kurtosis": 4.9872
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -0.3979,
+                "kurtosis": 4.9872
+            },
+            "Phase_3_SCALED": {
+                "skewness": -0.3979,
+                "kurtosis": 4.9872
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "ldrmodules.not_in_load": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 6.7252,
+                "kurtosis": 140.2921
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 6.7252,
+                "kurtosis": 140.2921
+            },
+            "Phase_3_SCALED": {
+                "skewness": 6.7252,
+                "kurtosis": 140.2921
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "ldrmodules.not_in_init": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 1.5875,
+                "kurtosis": 34.4586
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 1.5875,
+                "kurtosis": 34.4586
+            },
+            "Phase_3_SCALED": {
+                "skewness": 1.5875,
+                "kurtosis": 34.4586
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "ldrmodules.not_in_mem": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": 6.7205,
+                "kurtosis": 140.1507
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": 6.7205,
+                "kurtosis": 140.1507
+            },
+            "Phase_3_SCALED": {
+                "skewness": 6.7205,
+                "kurtosis": 140.1507
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        },
+        "svcscan.process_services": {
+            "group": "NORMAL",
+            "scaled": true,
+            "transform_applied": "Scaled Only",
+            "Phase_1_RAW": {
+                "skewness": -9.7186,
+                "kurtosis": 172.1649
+            },
+            "Phase_2_TRANSFORMED": {
+                "skewness": -9.7186,
+                "kurtosis": 172.1649
+            },
+            "Phase_3_SCALED": {
+                "skewness": -9.7186,
+                "kurtosis": 172.1649
+            },
+            "Shift_Raw_to_Transformed": 0.0
+        }
+    },
+    "global_metrics": {
+        "covariance_shift_frobenius_norm": 103784610.409089
+    }
+}
