@@ -7,7 +7,7 @@ import numpy as np
 import random
 
 # Import kiến trúc và Loss từ các file cùng thư mục
-from models import IDSGenerator, Discriminator
+from model import IDSGenerator, Discriminator
 from losses import WGANLoss, CovarianceMatchingLoss, SemanticRegularizationLoss, compute_gradient_penalty
 
 warnings.filterwarnings('ignore')
