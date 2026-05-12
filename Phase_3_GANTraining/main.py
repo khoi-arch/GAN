@@ -162,7 +162,7 @@ def train_single_experiment(exp_dir, epochs=200, batch_size=128):
             print(f"      Epoch [{epoch+1:03d}/{epochs}] | "
                   f"D_Loss: {d_loss.item():.4f} | "
                   f"G_Adv: {g_adv_loss.item():.4f} | "
-                  f"Cov: {g_cov_loss.item():.4f} | "
+                  f"Cov: {g_cov_loss.item():.6f} | "
                   f"L1: {l1_loss.item():.4f} | "
                   f"Sat: {sat_loss.item():.4f}")
 
