@@ -31,7 +31,7 @@ def load_data(exp_dir):
     benign_tensor = torch.load(os.path.join(exp_dir, "tensor_benign.pt"))
     return malware_tensor, benign_tensor
 
-def train_single_experiment(exp_dir, epochs=200, batch_size=128):
+def train_single_experiment(exp_dir, epochs=200, batch_size=128, lambda_adv=1.0, lambda_cov=5.0, lambda_l1=2.0, lambda_sat=10.0):
     """Hàm huấn luyện cho 1 folder cụ thể"""
     exp_name = os.path.basename(exp_dir)
     print(f"\n{'='*60}")
@@ -78,11 +78,8 @@ def train_single_experiment(exp_dir, epochs=200, batch_size=128):
     # [ĐÃ FIX Ở ĐÂY]: Xóa bỏ device=device trong __init__, chỉ dùng .to(device)
     loss_semantic = SemanticRegularizationLoss(policy_path).to(device)
     
-    # Trọng số của các hàm Loss (Hyperparameters cực kỳ quan trọng)
+    # Trọng số của các hàm Loss (Đã được chuyển thành tham số truyền vào hàm)
     lambda_gp = 10.0      # Gradient Penalty (Cố định của WGAN-GP)
-    lambda_cov = 5.0      # Giữ cấu trúc Manifold
-    lambda_l1 = 2.0       # Ép Sparsity (Càng cao GAN càng lười sửa)
-    lambda_sat = 10.0     # Phạt nặng Tanh Saturation
     n_critic = 5          # Train Critic 5 lần / Generator 1 lần
 
     print("      [4/4] Bắt đầu quá trình Huấn luyện Cường độ cao...")
@@ -149,7 +146,7 @@ def train_single_experiment(exp_dir, epochs=200, batch_size=128):
             l1_loss, sat_loss = loss_semantic(perturbation)
             
             # TỔNG LỰC HÀM LOSS CHO GENERATOR
-            g_total_loss = (g_adv_loss) + \
+            g_total_loss = (lambda_adv * g_adv_loss) + \
                            (lambda_cov * g_cov_loss) + \
                            (lambda_l1 * l1_loss) + \
                            (lambda_sat * sat_loss)
