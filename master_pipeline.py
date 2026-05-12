@@ -5,9 +5,16 @@ import pandas as pd
 from pathlib import Path
 import traceback
 
+# Lấy đường dẫn tuyệt đối của thư mục chứa file master_pipeline.py
 PROJECT_ROOT = Path(__file__).resolve().parent
-sys.path.append(str(PROJECT_ROOT))
 
+# Thêm thư mục gốc và các thư mục Phase vào PYTHONPATH
+sys.path.append(str(PROJECT_ROOT))
+sys.path.append(str(PROJECT_ROOT / "Phase_3_GANTraining"))
+sys.path.append(str(PROJECT_ROOT / "Phase_4_Evaluation"))
+# ==============================
+
+# Bây giờ các lệnh import sẽ hoạt động bình thường
 from Phase_3_GANTraining.main import train_single_experiment
 from Phase_4_Evaluation.evaluator import evaluate_single_experiment
 
