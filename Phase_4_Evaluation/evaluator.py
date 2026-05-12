@@ -69,7 +69,12 @@ def evaluate_single_experiment(exp_dir):
     fake_mal_pt = torch.load(os.path.join(exp_dir, "tensor_fake_malware.pt"))
     benign_pt = torch.load(os.path.join(exp_dir, "tensor_benign.pt"))
     
-    with open(os.path.join(exp_dir, "adversarial_policy.json"), 'r') as f:
+    # Dùng glob để tìm file adversarial_policy (vì theo tree của bạn file có đuôi _S3)
+    policy_files = list(Path(exp_dir).glob("adversarial_policy*.json"))
+    if not policy_files:
+        raise FileNotFoundError(f"Không tìm thấy file adversarial_policy*.json trong {exp_dir}")
+        
+    with open(policy_files[0], 'r') as f:
         policy = json.load(f)
 
     X_real_mal = real_mal_pt.numpy()
@@ -119,8 +124,11 @@ def evaluate_single_experiment(exp_dir):
 
 def run_evaluation_pipeline():
     
-    tensors_root = "data_artifacts/gan_tensors"
+    # Dùng path relative để trỏ về gốc của project (gan_bypass_idps)
+    project_root = Path(__file__).resolve().parent.parent
+    tensors_root = project_root / "data_artifacts" / "gan_tensors"
     
+    # Bây giờ tensors_root đã là một Path object, hàm iterdir() sẽ hoạt động tốt
     exp_folders = sorted([f for f in tensors_root.iterdir() if f.is_dir()])
     print(f"[*] Bắt đầu Phase 4: Đánh giá Chất lượng Sinh Adversarial Malware trên {len(exp_folders)} Experiments...")
 
@@ -147,8 +155,10 @@ def run_evaluation_pipeline():
         
     print(df_display.to_string(index=False))
     
-    df.to_csv("ablation_evaluation_results.csv", index=False)
-    print(f"\n✅ Đã xuất báo cáo ra file: ablation_evaluation_results.csv")
+    # Lưu file ra thư mục root của project
+    output_csv = project_root / "ablation_evaluation_results.csv"
+    df.to_csv(output_csv, index=False)
+    print(f"\n✅ Đã xuất báo cáo ra file: {output_csv.name}")
 
 if __name__ == "__main__":
     run_evaluation_pipeline()
