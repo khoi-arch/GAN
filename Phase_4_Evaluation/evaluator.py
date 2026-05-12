@@ -118,8 +118,8 @@ def evaluate_single_experiment(exp_dir):
     }
 
 def run_evaluation_pipeline():
-    script_dir = Path(__file__).resolve().parent
-    tensors_root = script_dir / "data_artifacts" / "gan_tensors"
+    
+    tensors_root = "data_artifacts/gan_tensors"
     
     if not tensors_root.exists():
         print(f"❌ KHÔNG TÌM THẤY: {tensors_root}")
