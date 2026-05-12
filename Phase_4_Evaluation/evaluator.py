@@ -98,26 +98,49 @@ def evaluate_single_experiment(exp_dir):
 
     # 3. Tính Evasion Rate
     evasion_rate = calculate_evasion_rate(clf, X_fake_mal)
+    
+    # [PHẦN MỚI THÊM VÀO]: Xem xác suất tự tin của IDS (Càng thấp tức là GAN càng hiệu quả)
+    probs_fake = clf.predict_proba(X_fake_mal)[:, 1] 
+    ids_confidence = np.mean(probs_fake)
 
     # 4. Perturbation Budget (L1 & L_inf Norms)
     diff = np.abs(X_fake_mal - X_real_mal)
     mean_l1 = np.mean(diff)
     max_linf = np.max(diff)
+    top_feature_drift = np.max(np.mean(diff, axis=0))
 
     # 5. Policy Compliance & Semantic Preservation
     compliance_details, overall_compliance = check_policy_compliance(X_real_mal, X_fake_mal, policy)
 
+    # === THAY THẾ PHẦN IN KẾT QUẢ ĐỂ IN CHI TIẾT TỪNG ZONE ===
     print(f"   -> Baseline Detection (Real): {baseline_detect*100:.2f}%")
     print(f"   -> Evasion Rate (Fake)      : {evasion_rate*100:.2f}%")
+    print(f"   -> IDS Avg Confidence       : {ids_confidence*100:.2f}%")
     print(f"   -> Perturbation (L1 / L_inf): {mean_l1:.4f} / {max_linf:.4f}")
-    print(f"   -> Policy Compliance Rate   : {overall_compliance:.2f}%")
+    
+    # [NÂNG CẤP MỚI]: IN CHI TIẾT TỪNG ZONE ĐỂ LÀM BẰNG CHỨNG
+    print(f"   -> Tổng Policy Compliance   : {overall_compliance:.2f}%")
+    print(f"      [Chi tiết các Zone]:")
+    for zone, details in compliance_details.items():
+        if details["compliant"]:
+            status = "✅ An toàn"
+        else:
+            status = f"❌ VI PHẠM (Lệch thực tế: {details['max_drift']:.4f} > Ngưỡng cho phép: {details['allowed']:.4f})"
+        
+        # Cảnh báo gắt nếu chạm vào Critical
+        if zone == "CRITICAL" and not details["compliant"]:
+            status += " ⚠️ MÃ ĐỘC ĐÃ BỊ HỎNG CẤU TRÚC!"
+            
+        print(f"        - {zone}: {status}")
 
     return {
         "Experiment": exp_name,
         "Baseline_Detect_%": baseline_detect * 100,
         "Evasion_Rate_%": evasion_rate * 100,
+        "IDS_Confidence_%": ids_confidence * 100,
         "Mean_L1_Perturbation": mean_l1,
         "Max_L_inf_Drift": max_linf,
+        "Top_Feature_Drift": top_feature_drift,
         "Policy_Compliance_%": overall_compliance,
         "Critical_Max_Drift": compliance_details.get("CRITICAL", {}).get("max_drift", 0)
     }
@@ -142,16 +165,18 @@ def run_evaluation_pipeline():
 
     # Xuất báo cáo tổng hợp
     df = pd.DataFrame(results)
-    print("\n" + "="*85)
-    print(f"{'BẢNG TỔNG HỢP ABLATION STUDY (EVALUATION METRICS)':^85}")
-    print("="*85)
+    print("\n" + "="*105)
+    print(f"{'BẢNG TỔNG HỢP ABLATION STUDY (EVALUATION METRICS)':^105}")
+    print("="*105)
     
     # Format hiển thị cho đẹp
     df_display = df.copy()
-    for col in ["Baseline_Detect_%", "Evasion_Rate_%", "Policy_Compliance_%"]:
-        df_display[col] = df_display[col].apply(lambda x: f"{x:.2f}%")
-    for col in ["Mean_L1_Perturbation", "Max_L_inf_Drift", "Critical_Max_Drift"]:
-        df_display[col] = df_display[col].apply(lambda x: f"{x:.4f}")
+    for col in ["Baseline_Detect_%", "Evasion_Rate_%", "IDS_Confidence_%", "Policy_Compliance_%"]:
+        if col in df_display.columns:
+            df_display[col] = df_display[col].apply(lambda x: f"{x:.2f}%")
+    for col in ["Mean_L1_Perturbation", "Max_L_inf_Drift", "Top_Feature_Drift", "Critical_Max_Drift"]:
+        if col in df_display.columns:
+            df_display[col] = df_display[col].apply(lambda x: f"{x:.4f}")
         
     print(df_display.to_string(index=False))
     
