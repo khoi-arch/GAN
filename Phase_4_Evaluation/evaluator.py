@@ -121,10 +121,6 @@ def run_evaluation_pipeline():
     
     tensors_root = "data_artifacts/gan_tensors"
     
-    if not tensors_root.exists():
-        print(f"❌ KHÔNG TÌM THẤY: {tensors_root}")
-        return
-
     exp_folders = sorted([f for f in tensors_root.iterdir() if f.is_dir()])
     print(f"[*] Bắt đầu Phase 4: Đánh giá Chất lượng Sinh Adversarial Malware trên {len(exp_folders)} Experiments...")
 
