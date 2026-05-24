@@ -1,5 +1,23 @@
 venv/*.pt
-*.pth
+
+
+# 1. Các file Dữ liệu & Trọng số (Siêu nặng - Tác nhân gây treo máy)
 *.csv
+*.pt
+*.pth
 *.pkl
-data_artifacts/
+
+# 2. File Logs và Báo cáo tự sinh
+*.log
+audit_report.json
+phase1_tuning_evidence.csv
+final_ablation_report_*.csv
+
+# 3. Thư mục ẩn của IDE/Hệ thống
+.cograph/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# 4. Bỏ qua thư mục split (Chứa csv nặng)
+data_artifacts/80-20_split/
