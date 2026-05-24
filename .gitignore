@@ -1,21 +1,36 @@
-venv/*.pt
+# =========================
+# Virtual environments
+# =========================
+venv/
+.venv/
+env/
+ENV/
 
-
-# Bỏ qua toàn bộ thư mục data và các file nặng
+# =========================
+# Local/generated data artifacts
+# Keep the folder local only.
+# Push only data_artifacts.zip for Kaggle restore.
+# =========================
 data_artifacts/
+!data_artifacts.zip
+
+# Heavy/generated data files
 *.csv
 *.pt
 *.pth
 *.pkl
+*.npy
+*.npz
 
-# Bỏ qua file log và báo cáo tự sinh
+# Logs and generated reports
 *.log
 audit_report.json
 phase1_tuning_evidence.csv
 final_ablation_report_*.csv
 
-# Thư mục ẩn
+# Python/cache/editor/tool folders
 .cograph/
 __pycache__/
 *.py[cod]
+.ipynb_checkpoints/
 .DS_Store
