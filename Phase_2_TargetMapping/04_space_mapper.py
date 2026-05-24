@@ -209,9 +209,9 @@ def process_logic_original(data_dir, groups_path, s_name, s_size):
             "normalization": "Robust Scaling (P95 Clip)"
         },
         "zones": {
-            "CRITICAL": {"allowed_variance": 0.02, "features": [f["index"] for f in zones_temp["CRITICAL"]]},
-            "MEDIUM": {"allowed_variance": 0.10, "features": [f["index"] for f in zones_temp["MEDIUM"]]},
-            "FREE": {"allowed_variance": 0.20, "features": [f["index"] for f in zones_temp["FREE"]]}
+            "CRITICAL": {"allowed_variance": 0.0, "features": [f["index"] for f in zones_temp["CRITICAL"]]},
+            "MEDIUM": {"allowed_variance": 0.60, "features": [f["index"] for f in zones_temp["MEDIUM"]]},
+            "FREE": {"allowed_variance": 1.00, "features": [f["index"] for f in zones_temp["FREE"]]}
         },
         "detailed_metrics": feature_metrics
     }

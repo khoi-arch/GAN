@@ -20,9 +20,9 @@ from Phase_4_Evaluation.evaluator import evaluate_single_experiment
 
 STRATEGIES = {
     "Strategy_1_Cautious":  {"adv": 1.0,  "cov": 5.0,  "l1": 2.0,  "sat": 10.0},
-    "Strategy_2_Aggressive":{"adv": 10.0, "cov": 1.0,  "l1": 0.1,  "sat": 1.0},
+    "Strategy_2_Aggressive":{"adv": 15.0, "cov": 1.0,  "l1": 0.1,  "sat": 1.0},
     "Strategy_3_Manifold":  {"adv": 5.0,  "cov": 10.0, "l1": 0.5,  "sat": 2.0},
-    "Strategy_4_Surgical":  {"adv": 8.0,  "cov": 2.0,  "l1": 5.0,  "sat": 1.0}
+    "Strategy_4_Surgical":  {"adv": 20.0, "cov": 0.5,  "l1": 10.0, "sat": 0.5}
 }
 
 def phase1_auto_tuning(target_exp_dir):
@@ -133,7 +133,7 @@ def phase3_full_ablation_run(tensors_root, best_weights, best_strategy_name):
 
 if __name__ == "__main__":
     tensors_root = PROJECT_ROOT / "data_artifacts" / "gan_tensors"
-    tuning_target_dir = tensors_root / "G_family_q99.9"
+    tuning_target_dir = tensors_root / "F_family_q99.5"
     
     df_tuning = phase1_auto_tuning(tuning_target_dir)
     best_weights, best_strategy_name = phase2_select_best_strategy(df_tuning)

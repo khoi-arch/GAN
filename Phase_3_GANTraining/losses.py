@@ -101,13 +101,15 @@ class SemanticRegularizationLoss(nn.Module):
         perturbation: Là scaled_perturbation (đã nhân mask) từ Generator.
         """
         # 1. L1 Loss (Sparsity / Feature Drift)
-        # Ép phần lớn các cột nhiễu về 0. Đồng thời đóng vai trò như Feature Drift Loss.
         l1_loss = torch.mean(torch.abs(perturbation))
         
         # 2. Soft Saturation Loss (Anti-Saturation)
-        # Tính tỷ lệ sử dụng ngân sách: ratio = |nhiễu| / max_variance
-        # Bình phương ratio để phạt cực nặng vùng CRITICAL nếu dám nhúc nhích.
         ratio = torch.abs(perturbation) / self.safe_variances
-        saturation_loss = torch.mean(ratio ** 2)
+        
+        # [CẬP NHẬT MỚI]: Dùng Vùng đệm 85% (Soft-Margin)
+        # GAN được tự do di chuyển trong 85% đầu tiên của ngân sách mà không bị phạt.
+        # Chỉ khi ratio > 0.85, hình phạt mới bắt đầu tính.
+        margin = 0.85
+        saturation_loss = torch.mean(torch.pow(torch.clamp(ratio - margin, min=0.0), 2))
         
         return l1_loss, saturation_loss
