@@ -80,6 +80,22 @@ def calculate_sensitivity(clf, X, eps_ratio=0.05, k_trials=5):
 def process_logic_original(data_dir, groups_path, s_name, s_size):
     """
     HÀM BÊ NGUYÊN 100% LOGIC CŨ CỦA NÍ VÀO ĐÂY ĐỂ CHẠY THEO SETTING S1-S5
+
+    [PATCH POLICY 2026]
+    - Giữ nguyên logic load tensor, train XGBoost, SHAP, sensitivity và latent stratified sampling.
+    - Sửa phần risk fusion + chia zone policy:
+        + Không dùng Geometric Mean vì sqrt(SHAP * Sensitivity) dễ collapse về 0
+          nếu sensitivity_norm = 0, dù SHAP vẫn cao.
+        + Dùng Weighted Sum: 0.7 * SHAP + 0.3 * Sensitivity.
+        + Không dùng KMeans 1D để tránh CRITICAL/MEDIUM rỗng.
+        + Dùng rank-based zoning:
+            Top 10% risk  -> CRITICAL
+            Next 20% risk -> MEDIUM
+            Remaining     -> FREE
+        + Đồng bộ allowed_variance:
+            CRITICAL = 0.02
+            MEDIUM   = 0.10
+            FREE     = 0.20
     """
     print(f"\n[RUN] Experiment: {os.path.basename(data_dir)} | Setting: {s_name} (Size: {s_size if s_size else 'FULL'})")
 
@@ -149,38 +165,67 @@ def process_logic_original(data_dir, groups_path, s_name, s_size):
     p95_sens = np.percentile(raw_sensitivities, 95) + 1e-9
     norm_sens = np.clip(raw_sensitivities / p95_sens, 0.0, 1.0)
     
-    # [4/5] Đang tính toán Risk Score và phân vùng Natural Breaks (1D K-Means)...
-    # Dùng Geometric Mean (Căn bậc 2 của tích) thay vì nhân trực tiếp
-    risk_scores = np.sqrt(norm_shap * norm_sens)
+    # [4/5] Đang tính toán Risk Score và phân vùng Rank-based Policy...
+    #
+    # LÝ DO SỬA:
+    # Logic cũ dùng Geometric Mean:
+    #     risk_scores = sqrt(norm_shap * norm_sens)
+    # Nếu norm_sens = 0 thì risk_score = 0, dù norm_shap cao.
+    # Điều này làm policy dễ collapse thành all-FREE.
+    #
+    # Logic mới:
+    #     risk_scores = 0.7 * norm_shap + 0.3 * norm_sens
+    # để giữ tín hiệu SHAP quan trọng, đồng thời vẫn tính sensitivity.
+    risk_alpha = 0.70
+    risk_scores = risk_alpha * norm_shap + (1.0 - risk_alpha) * norm_sens
     
     try:
         feature_names = get_feature_names(groups_path)
     except Exception:
         feature_names = [f"F_{i}" for i in range(X_malware.shape[1])]
 
-    # Dùng K-Means 1D để tự động tìm ngưỡng cắt (Natural Breaks) với n_init=50 để ổn định
-    risk_matrix = risk_scores.reshape(-1, 1)
-    kmeans_1d = KMeans(n_clusters=3, random_state=42, n_init=50).fit(risk_matrix)
-    centers = kmeans_1d.cluster_centers_.flatten()
-    
-    # Sắp xếp các cụm: 0 = Nhỏ nhất (FREE), 1 = Trung bình (MEDIUM), 2 = Lớn nhất (CRITICAL)
-    sorted_centers_idx = np.argsort(centers)
-    label_free = sorted_centers_idx[0]
-    label_medium = sorted_centers_idx[1]
-    label_critical = sorted_centers_idx[2]
-    
-    feature_labels = kmeans_1d.labels_
-    
+    n_features = len(feature_names)
+
+    if n_features != X_malware.shape[1]:
+        print(f"      [!] Cảnh báo: số feature_names ({n_features}) khác tensor shape ({X_malware.shape[1]}).")
+        print(f"      [!] Sẽ dùng số nhỏ hơn để tránh lệch index.")
+        n_features = min(n_features, X_malware.shape[1])
+        feature_names = feature_names[:n_features]
+        risk_scores = risk_scores[:n_features]
+        norm_shap = norm_shap[:n_features]
+        norm_sens = norm_sens[:n_features]
+
+    # Rank-based zoning để đảm bảo policy không bị all-FREE.
+    # Với 52 feature:
+    #   CRITICAL ~= 5 feature
+    #   MEDIUM   ~= 10 feature
+    #   FREE     ~= 37 feature
+    critical_ratio = 0.10
+    medium_ratio = 0.20
+
+    n_critical = max(1, int(round(n_features * critical_ratio)))
+    n_medium = max(1, int(round(n_features * medium_ratio)))
+
+    # Đảm bảo còn ít nhất 1 feature cho FREE nếu feature quá ít
+    if n_critical + n_medium >= n_features:
+        n_medium = max(0, n_features - n_critical - 1)
+
+    sorted_idx = np.argsort(-risk_scores)
+
+    critical_idx = set(sorted_idx[:n_critical].tolist())
+    medium_idx = set(sorted_idx[n_critical:n_critical + n_medium].tolist())
+
     # Nhóm features vào các dictionary tạm
     zones_temp = {"CRITICAL": [], "MEDIUM": [], "FREE": []}
     feature_metrics = []
 
-    for i in range(len(feature_names)):
-        f_label = feature_labels[i]
-        
-        if f_label == label_critical: zone_name = "CRITICAL"
-        elif f_label == label_medium: zone_name = "MEDIUM"
-        else: zone_name = "FREE"
+    for i in range(n_features):
+        if i in critical_idx:
+            zone_name = "CRITICAL"
+        elif i in medium_idx:
+            zone_name = "MEDIUM"
+        else:
+            zone_name = "FREE"
         
         metric = {
             "index": i,
@@ -193,8 +238,13 @@ def process_logic_original(data_dir, groups_path, s_name, s_size):
         feature_metrics.append(metric)
         zones_temp[zone_name].append(metric)
         
-    # Sort Metrics
+    # Sort Metrics theo risk giảm dần để dễ đọc trong JSON
     feature_metrics.sort(key=lambda x: x["risk_score"], reverse=True)
+
+    print("      -> Policy zone counts:")
+    print(f"         CRITICAL: {len(zones_temp['CRITICAL'])} features")
+    print(f"         MEDIUM  : {len(zones_temp['MEDIUM'])} features")
+    print(f"         FREE    : {len(zones_temp['FREE'])} features")
     
     # [5/5] Đang xuất Adversarial Policy...
     policy = {
@@ -204,14 +254,33 @@ def process_logic_original(data_dir, groups_path, s_name, s_size):
             "samples_used": actual_size,
             "surrogate_accuracy": float(acc),
             "total_features": len(feature_names),
-            "clustering_method": "1D K-Means (n_init=50, Natural Breaks)",
-            "risk_fusion_method": "Geometric Mean",
-            "normalization": "Robust Scaling (P95 Clip)"
+            "zoning_method": "Rank-based zoning: Top 10% CRITICAL, Next 20% MEDIUM, Remaining FREE",
+            "risk_fusion_method": "Weighted Sum: 0.70*SHAP + 0.30*Sensitivity",
+            "normalization": "Robust Scaling (P95 Clip)",
+            "zone_counts": {
+                "CRITICAL": len(zones_temp["CRITICAL"]),
+                "MEDIUM": len(zones_temp["MEDIUM"]),
+                "FREE": len(zones_temp["FREE"])
+            },
+            "allowed_variance_policy": {
+                "CRITICAL": 0.02,
+                "MEDIUM": 0.10,
+                "FREE": 0.20
+            }
         },
         "zones": {
-            "CRITICAL": {"allowed_variance": 0.0, "features": [f["index"] for f in zones_temp["CRITICAL"]]},
-            "MEDIUM": {"allowed_variance": 0.60, "features": [f["index"] for f in zones_temp["MEDIUM"]]},
-            "FREE": {"allowed_variance": 1.00, "features": [f["index"] for f in zones_temp["FREE"]]}
+            "CRITICAL": {
+                "allowed_variance": 0.02,
+                "features": [f["index"] for f in zones_temp["CRITICAL"]]
+            },
+            "MEDIUM": {
+                "allowed_variance": 0.10,
+                "features": [f["index"] for f in zones_temp["MEDIUM"]]
+            },
+            "FREE": {
+                "allowed_variance": 0.20,
+                "features": [f["index"] for f in zones_temp["FREE"]]
+            }
         },
         "detailed_metrics": feature_metrics
     }
